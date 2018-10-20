@@ -18,6 +18,10 @@ public class Player {
     float a = 0;
     float h = 0;
     Delta dPlant = new Delta(1 * SECOND);
+    boolean jumping = false;
+    Delta dJump = new Delta(.2f * SECOND);
+    float jr=0;
+
 
     public Player() {
         body.setBoundingBox(new Vector2(0, 0), new Vector2(32, 32));
@@ -27,6 +31,20 @@ public class Player {
 
     public void update(float dt) {
         dPlant.update(dt);
+        if(jumping){
+            dJump.update(dt);
+            if(dJump.isDone()){
+                jr-=world.acc*dt;
+                if(jr<1) {
+                    jumping = false;
+                    jr=0;
+                    dJump.reset();
+                }
+            }else
+                jr+=world.acc*dt;
+            body.setPos(Physics.getRadialVector(world.r+jr, a).add(world.body.pos()));
+
+        }
     }
 
     public void move(float ang) {
@@ -44,5 +62,9 @@ public class Player {
             if (world.addPlant(new Plant(a)))
                 dPlant.reset();
         }
+    }
+
+    public void jump() {
+        jumping=true;
     }
 }

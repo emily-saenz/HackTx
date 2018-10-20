@@ -7,6 +7,7 @@ import shapes1_5_5.shapes.ShapeRendererExt;
 
 import java.util.ArrayList;
 
+import static shapes1_5_5.physics.EMath.rn;
 import static shapes1_5_5.states.State.scr;
 
 /**
@@ -16,6 +17,7 @@ public class World {
     Circle shape ;
     public float r = 150;
     Body body = new Body();
+    public float acc = 300f;
 
     ArrayList<Plant> plants = new ArrayList<>();
 
@@ -36,8 +38,14 @@ public class World {
         return can;
     }
 
-    public void update(float dt){
-        plants.forEach(x->x.update(dt));
+    public void update(float dt, Monster mon)
+    {
+        plants.forEach(x->x.update(dt, mon));
+        for(int i=plants.size()-1;i>=0;i--){
+            if(plants.get(i).dead)
+                plants.remove(i);
+        }
+
     }
 
     public void render(ShapeRendererExt sr){
@@ -46,13 +54,7 @@ public class World {
         plants.forEach(x->x.render(sr));
     }
 
-    public void collidePlant(float dt, Monster mon) {
-        for(Plant p : plants){
-            if(p.body.getBoundingBox().overlaps(mon.body.getBoundingBox())){
-                p.getEaten(dt);
-            }else{
-                p.coll=false;
-            }
-        }
+    public Plant getRandPlant() {
+        return plants.isEmpty()? null: plants.get(rn.nextInt(plants.size()));
     }
 }

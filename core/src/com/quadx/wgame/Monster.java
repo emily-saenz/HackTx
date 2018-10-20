@@ -19,15 +19,26 @@ public class Monster {
     float a = 0;
     float h = 0;
     Delta dPlant = new Delta(1 * SECOND);
+    Plant target=null;
 
     public Monster() {
         body.setBoundingBox(new Vector2(0, 0), new Vector2(32, 32));
         body.setPos(Physics.getRadialVector(world.r, 180));
         dPlant.finish();
+        target=  world.getRandPlant();
+
     }
 
     public void update(float dt) {
-        move((p1.a %360) -(a %360) <1? -1 :1);
+        if(target !=null && !target.dead) {
+            move((target.ang % 360) - (a % 360) < 1 ? -1 : 1);
+            if(target.dead){
+                target=null;
+            }
+        }else{
+            move((p1.a % 360) - (a % 360) < 1 ? -1 : 1);
+            target=world.getRandPlant();
+        }
     }
 
     public void move(float ang) {
