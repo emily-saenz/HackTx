@@ -18,7 +18,7 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		gsm = new GameStateManager();
 		gsm.push(new GameState(gsm));
-		Screen.setSize(new Vector2(800,600));
+		Screen.setSize(new Vector2(1000,1000));
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import static com.quadx.wgame.state.GameState.p1;
 public class PlantComm extends Command {
     public PlantComm(){
         name="Use";
-        keyboard= Input.Keys.SPACE;
+        keyboard= Input.Keys.CONTROL_RIGHT;
         contB = Xbox360Pad.BUTTON_X;
     }
     @Override

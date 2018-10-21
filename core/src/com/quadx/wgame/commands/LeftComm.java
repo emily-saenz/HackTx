@@ -19,7 +19,7 @@ public class LeftComm extends Command {
     @Override
     public void execute() {
         if(pressed()) {
-            p1.move(2);
+            p1.move(1);
         }
     }
 }

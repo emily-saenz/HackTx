@@ -12,7 +12,7 @@ import static com.quadx.wgame.state.GameState.p1;
 public class JumpComm extends Command {
     public JumpComm(){
         name="Use";
-        keyboard= Input.Keys.ALT_LEFT;
+        keyboard= Input.Keys.SPACE;
         contB = Xbox360Pad.BUTTON_X;
     }
     @Override

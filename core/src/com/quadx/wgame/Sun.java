@@ -1,6 +1,7 @@
 package com.quadx.wgame;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import shapes1_5_5.physics.Body;
 import shapes1_5_5.physics.Physics;
@@ -14,22 +15,38 @@ import static com.quadx.wgame.state.GameState.world;
 public class Sun {
     Body body;
     float ang = 0;
+    Rectangle shade;
+    int x= 2000;
+    public int day = 0;
 
     public Sun() {
         body = new Body();
-        body.setBoundingBox(Physics.getRadialVector(world.r + 150, ang).add(world.body.pos())
-                , new Vector2(40, 40));
+        Vector2 pos = Physics.getRadialVector(world.r + 150, ang+180).add(world.body.pos());
+        body.setBoundingBox(pos, new Vector2(40, 40));
+        updateShade();
     }
 
+    void updateShade(){
+        Vector2 pos2 = Physics.getRadialVector(world.r + 1000, ang+270).add(world.body.pos());
+        shade= new Rectangle(pos2.x,pos2.y,x,x);
+    }
     public void update(float dt){
-        ang+=.1;
-        body.setBoundingBox(Physics.getRadialVector(world.r + 150, ang).add(world.body.pos())
-                , new Vector2(40, 40));
+        ang+=.3 ;
+        ang%=360;
+        if(ang<=.3)
+            day++;
+        Vector2 pos = Physics.getRadialVector(world.r + 150, ang+180).add(world.body.pos());
+        body.setBoundingBox(pos, new Vector2(40, 40));
+        updateShade();
     }
 
     public void render(ShapeRendererExt sr) {
-        sr.setColor(Color.LIGHT_GRAY);
+        sr.setColor(new Color(.1f,.1f,.1f,.6f));
+        sr.rect(shade, ang);
+        sr.setColor(Color.GOLD);
+
         sr.rect(body.getBoundingBox(), ang);
+
     }
 
 }

@@ -16,6 +16,9 @@ public class ShapeRendererExt extends ShapeRenderer {
     public void rect(Rectangle r,float a) {
         rect(r.x,r.y,0,0,r.width,r.height,1,1,a);
     }
+    public void rect(Rectangle r,Vector2 org, float a) {
+        rect(r.x,r.y,org.x,org.y,r.width,r.height,1,1,a);
+    }
     public void triangle(Triangle t){
         float[] f=t.getPoints();
         triangle(t.a.x,t.a.y,t.b.x,t.b.y,t.c.x,t.c.y);

@@ -19,21 +19,27 @@ import shapes1_5_5.gui.Fonts;
 import shapes1_5_5.shapes.ShapeRendererExt;
 import shapes1_5_5.states.GameStateManager;
 import shapes1_5_5.states.State;
+import shapes1_5_5.timers.Delta;
+
+import java.util.ArrayList;
 
 import static com.badlogic.gdx.Gdx.gl20;
+import static shapes1_5_5.physics.EMath.rn;
+import static shapes1_5_5.timers.Time.SECOND;
 
 /**
  * Created by Chris Cavazos on 10/20/2018.
  */
 public class GameState extends State {
-    ShapeRendererExt sr ;
+    ShapeRendererExt sr;
     public static World world;
     public static Player p1;
-    Monster mon;
     FPSModule fps = new FPSModule();
-    Sun sun;
     Moon moon;
-
+    Cloud cloud;
+    public static Sun sun;
+    ArrayList<Monster> monsters = new ArrayList<>();
+    Delta dSpawn  = new Delta(5*SECOND);
     public GameState(GameStateManager gsm) {
         super(gsm);
         sr = new ShapeRendererExt();
@@ -45,26 +51,49 @@ public class GameState extends State {
         Command.add(new PlantComm());
         Command.add(new JumpComm());
 
-        world  = new World();
+        world = new World();
         world.addPlant(new Plant(30));
-        sun = new Sun();
         moon = new Moon();
-        p1= new Player();
-        mon=  new Monster();
+        sun = new Sun();
+        cloud = new Cloud();
+        p1 = new Player();
         fps.setEnabled(true);
+        for(int i=0;i<10;i++){
+            monsters.add(new Monster());
+        }
     }
 
     @Override
     public void update(float dt) {
         fps.update(dt);
+        dSpawn.update(dt);
         Command.runList();
-        sun.update(dt);
         moon.update(dt);
-        world.update(dt,mon);
+        sun.update(dt);
+        cloud.update(dt);
+        if(dSpawn.isDone() && monsters.size()<10 && sun.day>0 ){
+            monsters.add(new Monster(moon.ang));
+            monsters.add(new Monster(moon.ang+10));
+
+            dSpawn = new Delta((rn.nextInt(5)+2)*SECOND);
+        }
+        for(int i=monsters.size()-1; i>=0;i--) {
+            Monster m = monsters.get(i);
+            p1.collision(m);
+            world.collision(m,p1);
+            if(m.dead)
+                monsters.remove(i);
+
+        }
+        world.update(dt);
 
         p1.update(dt);
-        mon.update(dt);
+        monsters.forEach(x->x.update(dt));
+    }
 
+    public static boolean isInBound(float angA, float angB, float spread){
+        float angd = (angA - angB + 180 + 360) % 360 - 180;
+        return angd<spread && angd > -spread;
     }
 
     @Override
@@ -74,12 +103,20 @@ public class GameState extends State {
         sr.begin(ShapeRenderer.ShapeType.Filled);
         world.render(sr);
         p1.render(sr);
-        mon.render(sr);
-        sun.render(sr);
+        monsters.forEach(x->x.render(sr));
         moon.render(sr);
+        sun.render(sr);
+        cloud.render(sr);
         sr.end();
+        sb.begin();
+        p1.renderSB(sb);
+        Fonts.setFontSize(5);
+        Fonts.getFont().draw(sb,"ENEMIES: "+monsters.size(),10,scr.size.y-30);
+        Fonts.getFont().draw(sb,"DAYS: " + sun.day,10,scr.size.y-50);
+
+        sb.end();
         Fonts.getFont().setColor(Color.WHITE);
-        fps.render(sb,sr,new Vector2(20,20));
+        fps.render(sb, sr, new Vector2(20, 20));
     }
 
     @Override
